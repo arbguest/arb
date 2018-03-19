@@ -536,23 +536,24 @@ arb_expm1(arb_t z, const arb_t x, slong prec)
         if (mag_cmp_2exp_si(arb_radref(x), 20) < 0)
         {
             /* [exp(a+b) - 1] - [exp(a) - 1] = exp(a) * (exp(b)-1) */
-            mag_t t, u, one;
+            mag_t t, u;
+            arb_t v;
 
             mag_init_set(t, arb_radref(x));
-            mag_init(u);
-            mag_init(one);
-            mag_one(one);
 
             arb_exp_arf(z, arb_midref(x), prec, 1, MAGLIM(prec));
 
+            arb_init(v);
+            mag_init(u);
+            arb_add_ui(v, z, 1, prec);
+            arb_get_mag(u, v);
+
             mag_expm1(t, t);
-            arb_get_mag(u, z);
-            mag_add(u, u, one);
             mag_addmul(arb_radref(z), t, u);
 
             mag_clear(t);
             mag_clear(u);
-            mag_clear(one);
+            arb_clear(v);
         }
         else
         {
